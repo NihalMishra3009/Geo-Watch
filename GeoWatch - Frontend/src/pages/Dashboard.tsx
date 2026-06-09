@@ -22,7 +22,10 @@ type ClusterLike = {
   eventId?: unknown
 }
 
-const wsEndpoint = import.meta.env.VITE_WS_ENDPOINT ?? 'http://localhost:8080/ws'
+const wsEndpoint = (() => {
+  const base = import.meta.env.VITE_WS_BASE_URL || import.meta.env.VITE_WS_ENDPOINT || 'http://localhost:8080/ws'
+  return base.endsWith('/ws') ? base : base.replace(/\/+$/, '') + '/ws'
+})()
 
 const riskColorMap: Record<RiskLevel, string> = {
   HIGH: 'red',
