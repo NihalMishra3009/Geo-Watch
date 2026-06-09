@@ -16,13 +16,13 @@ public class MetricsProxyDataSource {
                 MetricsProxyDataSource.class.getClassLoader(),
                 new Class[]{DataSource.class},
                 (proxy, method, args) -> {
-                    if ("unwrap".equals(method.getName()) && args.length > 0 && args[0] instanceof Class) {
+                    if ("unwrap".equals(method.getName()) && args != null && args.length > 0 && args[0] instanceof Class) {
                         Class<?> iface = (Class<?>) args[0];
                         if (iface.isInstance(proxy)) {
                             return proxy;
                         }
                     }
-                    if ("isWrapperFor".equals(method.getName()) && args.length > 0 && args[0] instanceof Class) {
+                    if ("isWrapperFor".equals(method.getName()) && args != null && args.length > 0 && args[0] instanceof Class) {
                         Class<?> iface = (Class<?>) args[0];
                         if (iface.isInstance(proxy)) {
                             return true;
@@ -43,13 +43,13 @@ public class MetricsProxyDataSource {
                 MetricsProxyDataSource.class.getClassLoader(),
                 new Class[]{Connection.class},
                 (proxy, method, args) -> {
-                    if ("unwrap".equals(method.getName()) && args.length > 0 && args[0] instanceof Class) {
+                    if ("unwrap".equals(method.getName()) && args != null && args.length > 0 && args[0] instanceof Class) {
                         Class<?> iface = (Class<?>) args[0];
                         if (iface.isInstance(proxy)) {
                             return proxy;
                         }
                     }
-                    if ("isWrapperFor".equals(method.getName()) && args.length > 0 && args[0] instanceof Class) {
+                    if ("isWrapperFor".equals(method.getName()) && args != null && args.length > 0 && args[0] instanceof Class) {
                         Class<?> iface = (Class<?>) args[0];
                         if (iface.isInstance(proxy)) {
                             return true;
@@ -58,7 +58,7 @@ public class MetricsProxyDataSource {
 
                     Object result = method.invoke(originalConnection, args);
                     if (("prepareStatement".equals(method.getName()) || "createStatement".equals(method.getName())) && result != null) {
-                        String sql = (args.length > 0 && args[0] instanceof String) ? (String) args[0] : null;
+                        String sql = (args != null && args.length > 0 && args[0] instanceof String) ? (String) args[0] : null;
                         return wrapStatement(result, sql, metricsService);
                     }
                     return result;
@@ -78,13 +78,13 @@ public class MetricsProxyDataSource {
                 MetricsProxyDataSource.class.getClassLoader(),
                 interfaces,
                 (proxy, method, args) -> {
-                    if ("unwrap".equals(method.getName()) && args.length > 0 && args[0] instanceof Class) {
+                    if ("unwrap".equals(method.getName()) && args != null && args.length > 0 && args[0] instanceof Class) {
                         Class<?> iface = (Class<?>) args[0];
                         if (iface.isInstance(proxy)) {
                             return proxy;
                         }
                     }
-                    if ("isWrapperFor".equals(method.getName()) && args.length > 0 && args[0] instanceof Class) {
+                    if ("isWrapperFor".equals(method.getName()) && args != null && args.length > 0 && args[0] instanceof Class) {
                         Class<?> iface = (Class<?>) args[0];
                         if (iface.isInstance(proxy)) {
                             return true;
@@ -93,7 +93,7 @@ public class MetricsProxyDataSource {
 
                     if (method.getName().startsWith("execute") || method.getName().startsWith("addBatch")) {
                         String executionSql = sql;
-                        if (executionSql == null && args.length > 0 && args[0] instanceof String) {
+                        if (executionSql == null && args != null && args.length > 0 && args[0] instanceof String) {
                             executionSql = (String) args[0];
                         }
 
